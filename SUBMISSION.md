@@ -40,7 +40,7 @@ DWARPAL introduces a deterministic, fail-closed policy gateway that governs assi
   - Explainable rules-based risk assessment.
   - 4 bounded scenario presets (`safe_approved`, `missing_approval`, `tampered_plan`, `replayed_plan`).
   - Structured append-oriented SQLite audit trail.
-  - MCP Streamable HTTP endpoint mounted at `/mcp`.
+  - MCP Streamable HTTP endpoint mounted at `/mcp` with verified client session, tool listing, and tool invocation (`protocol 2025-11-25`).
 - **What is Simulated:**
   - Homeowner identity evidence (demo persona checkbox).
   - Smart locks and door-access hardware (grant preview only, no physical lock operated).
@@ -49,10 +49,14 @@ DWARPAL introduces a deterministic, fail-closed policy gateway that governs assi
   - Live AWS Verified Permissions policy store (adapter present in code).
   - Amazon Bedrock / Strands live model calls (adapter present in code).
   - Native Alexa+ partner accounts (simulated web route used).
+- **Deployment Status:**
+  - Local verified uvicorn server on port 8000; not deployed to public cloud.
 
 ## 7. Submission Artifacts
-- **Repository:** Public GitHub Repository (MIT Licensed)
-- **Video Demo:** Under 3 minutes, English, demonstrating live app workflow (see `docs/DEMO_SCRIPT.md`).
-- **Product Feedback:** See `docs/PRODUCT_FEEDBACK.md`.
-- **Friction Log:** See `docs/FRICTION_LOG.md`.
-- **Execution Report:** See `docs/EXECUTION_REPORT.md`.
+- **Repository:** https://github.com/Ajayrathod04/dwarpal (Public, MIT Licensed)
+- **Thumbnail Image:** `docs/assets/dwarpal_submission_thumbnail.jpg` (Neo-brutalist campaign banner, 16:9)
+- **Supplementary Source ZIP:** `dist/dwarpal-source-submission.zip` (0.62 MB, excludes `.git`, `.venv`, `.env`, `*.sqlite3`)
+- **Video Demo Walkthrough Script:** Under 3 minutes, English (see `docs/DEMO_SCRIPT.md`)
+- **Product Feedback:** See `docs/PRODUCT_FEEDBACK.md` (FastAPI, Python, MCP SDK, SQLite, Pytest)
+- **Friction Log:** See `docs/FRICTION_LOG.md` (real observed technical friction)
+- **Execution Report:** See `docs/EXECUTION_REPORT.md` (detailed release gate evidence)

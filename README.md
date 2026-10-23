@@ -48,7 +48,7 @@ AI assistants are rapidly advancing from answering questions to coordinating con
 - **Architecture & Trace Transparency (P1.5):**
   - In-app interactive architecture view detailing live, simulated, and unconfigured layers.
 - **Dual MCP SDK Support (P2.1):**
-  - Compatible with both MCP v1.x (`FastMCP`) and v2.x (`MCPServer`) with Streamable HTTP mounted at `/mcp`.
+  - Compatible with both MCP v1.x (`FastMCP`) and v2.x (`MCPServer`) with Streamable HTTP mounted at `/mcp`; external client connection and tool invocation verified (`protocol 2025-11-25`).
 
 ---
 

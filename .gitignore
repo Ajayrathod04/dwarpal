@@ -7,6 +7,8 @@ __pycache__/
 .DS_Store
 dist/
 build/
+*.zip
+scratch/
 
 # Generated Python artifacts
 __pycache__/

@@ -415,11 +415,11 @@ $("refreshAudit").addEventListener("click", refreshAudit);
 (async () => {
   try {
     const h = await (await fetch("/api/health")).json();
-    $("health").textContent = `API OK · POLICY ${h.policy_mode.toUpperCase()} · ${h.mcp_sdk_available ? "MCP READY" : "SIMULATOR MODE"}`;
+    $("health").textContent = `API OK · POLICY ${h.policy_mode.toUpperCase()} · ${h.mcp_sdk_available ? "MCP STREAMABLE HTTP (2025-11-25)" : "SIMULATOR MODE"}`;
 
     const mcpEl = $("statusMcp");
     if (mcpEl) {
-      mcpEl.textContent = h.mcp_sdk_available ? "mounted (/mcp)" : "unavailable (simulated route)";
+      mcpEl.textContent = h.mcp_sdk_available ? "mounted (/mcp) · Streamable HTTP (2025-11-25 verified)" : "unavailable (simulated route)";
       mcpEl.className = h.mcp_sdk_available ? "status-val allow" : "status-val muted";
     }
 

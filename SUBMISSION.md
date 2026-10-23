@@ -1,38 +1,58 @@
-# Devpost submission pack — DWARPAL
+# Devpost Submission Pack — DWARPAL
 
-## Project title
-DWARPAL — The consent layer for AI actions
+## 1. Project Title
+**DWARPAL — The Consent & Policy Layer for AI Actions**
 
-## Short description
-DWARPAL is a policy-first action gateway for AI assistants. It exposes guarded capabilities through a self-hosted MCP Streamable HTTP server, evaluates requests before any action, and records an inspectable audit receipt. The browser simulator demonstrates allow/deny decisions, read-only case lookup, and human-approved maintenance proposals.
+## 2. Short Description
+DWARPAL is an action-governance gateway for AI assistants. Before an assistant acts, DWARPAL proves what was requested, who approved it, and what scope is allowed. It orchestrates case lookup, maintenance proposals, canonical SHA-256 plan integrity binding, an explainable risk assessment, an explicit human approval gate, and structured audit receipts.
 
-## Long description
-AI assistants are moving from answering questions to taking actions across household, civic, and business systems. A single-turn chatbot can suggest a task, but it often hides the boundary between a user's intent and an action the system is actually authorized to perform.
+## 3. Long Description
+### The Problem
+As AI assistants transition from answering queries to executing real-world consequential tasks (e.g., booking repairs, granting contractor entry, dispatching services), single-turn interfaces obscure the boundary between a user's conversational intent and the physical actions the system is authorized to perform. Without explicit policy checks, integrity bindings, and human-in-the-loop review, assistants risk executing unauthorized actions, exceeding permitted scopes, or lacking auditable provenance.
 
-DWARPAL makes that boundary visible. It exposes three tools over MCP: read a fictional case status, propose a maintenance action, and simulate an access request. Each request passes a policy check; unknown or unsafe actions are denied by default. The interface explains the decision and shows the audit receipt. Maintenance is only proposed, never dispatched, and no physical access device or external municipal service is connected.
+### The Solution: DWARPAL
+DWARPAL introduces a deterministic, fail-closed policy gateway that governs assistant actions before execution:
+1. **Case Context & Maintenance Intent:** Reads fictional service cases with role checks (`get_case_status`) and records maintenance proposals (`propose_maintenance_action`) without external dispatch.
+2. **Canonical Plan Integrity Binding:** Serializes the exact proposed action, target door, scope (1 entry, 15 minutes max), and intent into canonical JSON (`dwarpal-plan-v1`), generating a SHA-256 digest.
+3. **Explainable Risk Assessment:** Evaluates physical entry sensitivity, approval status, and identity evidence deterministically, outputting risk levels (`LOW`, `ELEVATED`, `HIGH`), explicit reason codes, and recommended next steps.
+4. **Explicit Human Gate & Replay Protection:** Halts execution until explicit homeowner approval is submitted. The server validates the canonical digest against the persisted plan, enforces a 10-minute validity window, and atomically finalizes the state to prevent double-execution or replay.
+5. **Scoped Access Preview:** Returns a narrow 15-minute, single-entry preview only when simulated resident identity and homeowner approval conditions are met. (No physical lock is operated; all devices are simulated).
+6. **Structured Audit Receipts:** Logs every read, proposal, approval, replay attempt, and denial into an append-oriented SQLite store with unique event IDs, correlation IDs, reason codes, and UTC timestamps.
+7. **Interactive 7-Stage Stepper & Presets:** The UI features an interactive 7-step vertical timeline stepper, 4 one-click scenario presets, and a provenance panel explaining why every decision was made.
 
-The prototype runs locally without cloud credentials. Its local policy mode is explicitly labelled as a simulator. An optional Amazon Verified Permissions adapter and optional Strands/Bedrock agent are included for live integration, but they must be configured and verified before claiming them as working AWS services.
+## 4. Track Selection
+- **Primary Track:** **Alexa+** — Simulated Alexa+-style web experience path with self-hosted MCP Streamable HTTP server mounted at `/mcp`.
+- **AWS Builder Mini-Challenge:** **Not Selected / Disclosed as Not Configured** (Honest disclosure: Amazon Verified Permissions and Amazon Bedrock adapters are present in source code but not configured with live AWS account resources).
+- **Open Source Mini-Challenge:** Eligible under the hackathon window; published as an open-source MIT repository.
 
-## Track selection
-- Primary: Alexa+ — self-hosted MCP server / simulated Alexa+-style experience.
-- AWS Builder mini-challenge: select only if you actually configure and demonstrate a live AWS service integration in the final demo and document it below.
-- Open Source mini-challenge: this is a new MIT-licensed repository created during the hackathon window; only select if its timing and public repository status meet the official rules.
+## 5. Technologies Used
+- **Backend:** Python 3.14 / 3.11+, FastAPI, Uvicorn, SQLite, Pydantic, HMAC / Hashlib, MCP Python SDK (Streamable HTTP supporting both v1.x and v2.x).
+- **Frontend:** Vanilla HTML5, CSS3 (Neo-brutalist / Y2K campaign aesthetic with Google Fonts Archivo Black & Space Grotesk), Vanilla JavaScript.
+- **Testing:** Pytest (24 automated tests), Node.js syntax checker, Playwright-compatible browser automation.
+- **AI Tooling Disclosure:** Developed in pair programming with Google Antigravity IDE (Agentic Assistant) for codebase scaffolding, test automation, and code hardening.
 
-## Technologies
-- Python, FastAPI, MCP Python SDK (Streamable HTTP), SQLite, HTML/CSS/JavaScript.
-- Optional integrations: Amazon Verified Permissions via boto3; Amazon Bedrock through Strands Agents SDK.
-- State exactly which optional integrations were live in the submitted build: [FILL IN].
+## 6. What Works & What is Simulated
+- **What is Live & Verified:**
+  - Deterministic local policy gate (24 automated tests passing).
+  - SHA-256 canonical plan integrity binding and tamper detection.
+  - Atomic single-use approval transition and replay rejection (`ALREADY_FINALIZED`).
+  - 7-step lifecycle state machine and interactive vertical stepper.
+  - Explainable rules-based risk assessment.
+  - 4 bounded scenario presets (`safe_approved`, `missing_approval`, `tampered_plan`, `replayed_plan`).
+  - Structured append-oriented SQLite audit trail.
+  - MCP Streamable HTTP endpoint mounted at `/mcp`.
+- **What is Simulated:**
+  - Homeowner identity evidence (demo persona checkbox).
+  - Smart locks and door-access hardware (grant preview only, no physical lock operated).
+  - Contractor booking and service provider dispatch (fictional tickets).
+- **What is Unconfigured:**
+  - Live AWS Verified Permissions policy store (adapter present in code).
+  - Amazon Bedrock / Strands live model calls (adapter present in code).
+  - Native Alexa+ partner accounts (simulated web route used).
 
-## Product feedback
-Complete `docs/PRODUCT_FEEDBACK.md` with real observations for each tool/API/SDK used. Don't submit placeholders.
-
-## Friction log
-Complete `docs/FRICTION_LOG.md` with actual friction events only. Do not fabricate issues or test outcomes.
-
-## Demo
-Public English video under 3 minutes: [PASTE YOUTUBE/VIMEO URL]
-Repository: [PASTE PUBLIC GITHUB URL]
-Live demo or local setup instructions: see README.
-
-## Originality and scope
-The design uses general visual references—oversized campaign typography, neon gradients, editorial bento cards and neo-brutalist borders—not copied logos, artwork or proprietary typefaces. Spotify Mix is proprietary and is not bundled. The app uses Archivo Black and Space Grotesk as substitutes.
+## 7. Submission Artifacts
+- **Repository:** Public GitHub Repository (MIT Licensed)
+- **Video Demo:** Under 3 minutes, English, demonstrating live app workflow (see `docs/DEMO_SCRIPT.md`).
+- **Product Feedback:** See `docs/PRODUCT_FEEDBACK.md`.
+- **Friction Log:** See `docs/FRICTION_LOG.md`.
+- **Execution Report:** See `docs/EXECUTION_REPORT.md`.

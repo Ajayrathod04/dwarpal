@@ -1,34 +1,67 @@
-# Under-3-minute demo script — DWARPAL
+# Under-3-Minute Video Demo Script — DWARPAL
 
-**Target runtime: 2:40. Record the actual running application, not slides alone.** This script is for the simulated Alexa+-style web experience path. Do not claim native Alexa+ integration, a live MCP endpoint, or live AWS integration unless you actually verify those separately.
+> **Event:** Amazon Developer Hackathon  
+> **Track:** Alexa+ (Simulated Experience & Streamable HTTP MCP Route)  
+> **Target Duration:** 2:40 – 2:50 (Strictly under 3:00, English, public link without login)  
+> **Format:** Continuous live application screen recording with voiceover (no slides-only presentation)
 
-**0:00–0:18 — Hook**
-Screen: hero landing page.
-Say: “AI assistants are moving from answers to actions. In a home, a request to arrange a repair can turn into a contractor visit and a request for entry. DWARPAL shows the boundary between intent, approval, and action.”
+---
 
-**0:18–0:55 — Run the three-step workflow**
-Screen: multi-step orchestration panel. Keep simulated identity unchecked. Click **PREPARE EXACT PLAN**.
-Say: “One request prepares three steps: read the fictional service case, create a maintenance proposal, and pause for approval. The server persists a preview with a SHA-256 hash over the exact case, request, proposed action, door and scope. Nothing grants access yet.”
+### 0:00 – 0:12 · Hook
+- **On Screen:** Hero landing page (`http://127.0.0.1:8000`). Large display typography: *BEFORE AI ACTS. MAKE IT PROVE THE HANDOFF.* Visible status badge: `SIMULATED HOME-SERVICE WORKFLOW`.
+- **Voiceover:**  
+  *“AI assistants can coordinate real-world tasks. But before an action affects a home, we need to know exactly what was requested, what was approved, and what scope is permitted. This is DWARPAL.”*
 
-**0:55–1:20 — Prove denial and no replay**
-With simulated identity unchecked, click **APPROVE THIS PLAN**. Show the denial, then point out that the same preview is finalized and cannot be replayed.
-Say: “A separate approval click is not enough by itself: the simulated identity condition is also required. This preview is one-time, and a failed attempt cannot be replayed. The identity input is a demo control, not real authentication.”
+---
 
-**1:20–1:45 — Show the allowed preview**
-Prepare a new exact plan, check “Simulated identity evidence”, then click **APPROVE THIS PLAN**. Show the one-entry/15-minute preview.
-Say: “The approval is bound to the exact plan hash. When the demo identity condition is present, the system returns a narrowly scoped preview—but still does not operate a physical lock or contact a contractor.”
+### 0:12 – 0:35 · Case Context & Maintenance Proposal
+- **On Screen:** Scroll to the interactive Action Orchestration section. Select `CASE-1042: Leaking kitchen sink`. Click **PREPARE EXACT PLAN**.
+- **Visuals:** The 7-step vertical timeline activates. Steps 1, 2, and 3 turn green (`CASE_CONTEXT_LOADED`, `MAINTENANCE_PROPOSAL_CREATED`, `PLAN_PREVIEW_READY`). Step 4 shows `PENDING` (`AWAITING_HOMEOWNER_APPROVAL`).
+- **Voiceover:**  
+  *“One homeowner request begins the flow: DWARPAL reads the fictional service ticket, records a maintenance proposal without external dispatch, and computes a unique workflow run ID and plan preview. Execution halts immediately at a human approval gate.”*
 
-**1:45–2:10 — Audit receipt**
-Refresh the audit trail. Show allow and deny records.
-Say: “Each tool call leaves a receipt with the principal, action, resource, policy result, reason and timestamp. This local SQLite log persists for the demo, but it is not tamper-proof production audit storage.”
+---
 
-**2:10–2:40 — Honest close**
-Show the health endpoint and README.
-Say: “DWARPAL is a simulated Alexa+-style experience. The optional MCP server and AWS adapters are in the source, but they are not claimed as verified unless the live tests succeed. The core contribution is the approval-aware workflow and visible safety boundary.”
+### 0:35 – 1:00 · Exact-Plan Integrity Binding (Tamper Test)
+- **On Screen:** Highlight the **CANONICAL SHA-256 INTEGRITY BINDING** card displaying the hexadecimal hash. Click the **TAMPER TEST (ALTER HASH)** button (or Scenario C preset).
+- **Visuals:** The server evaluates the request, detects the hash mismatch, and immediately marks Step 5 as `COMPLETED (DENY)` and Step 6 as `BLOCKED`. The Provenance panel shows `× ACCESS REQUEST DENIED [HASH_MISMATCH]`.
+- **Voiceover:**  
+  *“The approval is bound to a canonical JSON digest of the exact action, door, and 15-minute scope. If an assistant or compromised process alters a single field or hash, the server detects the tampering and fails closed.”*
 
-## Recording checks
-- Public YouTube or Vimeo link, English, strictly under 3 minutes.
-- Show the actual running application and real interactions.
-- Do not show secrets, AWS keys, private data, copyrighted music, or unlicensed footage.
-- If the app health endpoint reports `mcp_sdk_available: false`, present the web simulation path, not an MCP-server claim.
-- If AWS integrations are not configured and verified, do not show fake console activity or claim the AWS Builder mini-challenge.
+---
+
+### 1:00 – 1:25 · Human Approval Gate (Missing Evidence Failure)
+- **On Screen:** Click Scenario B: **RUN GATE SCENARIO** (or prepare a fresh plan with simulated identity unchecked, then click Approve).
+- **Visuals:** Provenance displays `× ACCESS REQUEST DENIED` with reason code `[MISSING_IDENTITY_EVIDENCE]`. The Explainable Risk Assessment displays `ELEVATED` risk with recommended next step `VERIFY_IDENTITY_DEMO`.
+- **Voiceover:**  
+  *“Even with homeowner consent, resident entry requires verified identity evidence. Here, simulated evidence is absent. DWARPAL halts at the gate, logs the denial reason, and explains what is required before proceeding.”*
+
+---
+
+### 1:25 – 1:55 · Safe Allowed Simulation (Narrow Scope Preview)
+- **On Screen:** Click Scenario A: **RUN SAFE SCENARIO** (or prepare plan, check Simulated Identity, and click Approve).
+- **Visuals:** All 7 timeline steps complete in green. The Provenance panel updates to `✓ ACCESS SCOPE PREVIEW ALLOWED [APPROVED_SIMULATED]`. The scope preview confirms: `FRONT-01 · 1 entry · 15 minutes · preview only`.
+- **Voiceover:**  
+  *“When all required demo conditions match and the exact plan hash is approved, DWARPAL returns a narrow, single-entry 15-minute access preview. Importantly, this is a deterministic simulation: no physical lock is unlocked, and no contractor is contacted.”*
+
+---
+
+### 1:55 – 2:20 · Structured Audit Receipts & Replay Protection
+- **On Screen:** Click **RUN REPLAY SCENARIO** to show immediate rejection as `ALREADY_FINALIZED`. Then scroll down to **SHOW ME THE RECEIPTS** and click **REFRESH LOG ↻**.
+- **Visuals:** The SQLite audit table displays rows with UTC timestamps, event types (`CASE_READ`, `PROPOSAL_CREATED`, `APPROVAL_REQUIRED`, `APPROVAL_ACCEPTED`, `APPROVAL_REPLAY_REJECTED`), decision chips, and reason codes. Reload the page to prove persistence.
+- **Voiceover:**  
+  *“Approval tokens are strictly single-use; any replay attempt is rejected immediately. Every evaluation writes an append-oriented receipt with event IDs, correlation IDs, and policy reasons into local SQLite storage, persisting across reloads.”*
+
+---
+
+### 2:20 – 2:40 · Architecture & Honest Disclosures
+- **On Screen:** Scroll to the **HOW IT WORKS** trace section. Highlight the Client -> Gateway -> Policy -> Store -> Audit flow. Point to the status panel in the hero.
+- **Voiceover:**  
+  *“DWARPAL implements a self-hosted Streamable HTTP MCP server at slash mcp alongside this web simulation. In the spirit of complete hackathon transparency: our local deterministic policy and plan binding are fully verified. Cloud adapters for Amazon Verified Permissions and Bedrock are present in code, but honestly disclosed as unconfigured without live AWS resources.”*
+
+---
+
+### 2:40 – 2:50 · Closing
+- **On Screen:** Return to hero view showing the DWARPAL brand mark and value proposition.
+- **Voiceover:**  
+  *“DWARPAL makes the boundary visible before an assistant acts: the request, the approval, the permitted scope, and the audit trail. Thank you.”*

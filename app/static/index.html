@@ -1,56 +1,496 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DWARPAL — Every action has a boundary</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="description" content="Before an assistant acts, DWARPAL proves what was requested, who approved it, and what scope is allowed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <div class="grain"></div>
-<header class="topbar"><a class="brand" href="#"><span class="brand-mark">D.</span> DWARPAL <span class="beta">HOME HANDOFF / SIMULATED</span></a><nav><a href="#lab">THE LAB</a><a href="#audit">AUDIT TRAIL</a><a href="#about">WHY IT MATTERS</a></nav><span class="status"><i></i> DEMO SYSTEM / NO REAL DEVICES</span></header>
+
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-mark">D.</span> DWARPAL <span class="beta">SIMULATED HOME-SERVICE WORKFLOW</span></a>
+  <nav>
+    <a href="#presets">SCENARIOS</a>
+    <a href="#workflow">ORCHESTRATION</a>
+    <a href="#trace">TRACE / ARCHITECTURE</a>
+    <a href="#lab">ACTION LAB</a>
+    <a href="#audit">RECEIPTS</a>
+  </nav>
+  <span class="status"><i class="status-dot"></i> DEMO SYSTEM · NO REAL LOCKS</span>
+</header>
+
 <main>
 <section class="hero">
-  <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span> ALEXA+ STYLE SIMULATION / HOME SERVICE HANDOFF</div>
-    <h1>LET AI<br><em>PLAN.</em><br>MAKE IT<br><span class="outline">EARN THE</span><br><span class="hot">HANDOFF.</span></h1>
-    <p class="hero-sub">Arrange a home repair without silently granting a contractor access. Every plan is previewed, hashed, explicitly approved, and logged before the simulated handoff can proceed.</p>
-    <div class="hero-actions"><a class="button button-hot" href="#lab">TRY THE ACTION LAB <span>↘</span></a><a class="text-link" href="#audit">SEE THE RECEIPTS ↗</a></div>
-    <div class="micro-stats"><div><b>03</b><span>GUARDED TOOLS</span></div><div><b>01</b><span>POLICY GATE</span></div><div><b>∞</b><span>REASONS TO ASK WHY</span></div></div>
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> ALEXA+ STYLE SIMULATION · HOME SERVICE ACTION GOVERNANCE</div>
+    <h1>BEFORE AI<br><em>ACTS.</em><br>MAKE IT<br><span class="outline">PROVE THE</span><br><span class="hot">HANDOFF.</span></h1>
+    <p class="hero-sub">Before an assistant acts, DWARPAL proves what was requested, who approved it, and what scope is allowed.</p>
+    
+    <div class="hero-actions">
+      <a class="button button-hot" href="#presets" id="startDemoBtn">START DEMO SCENARIO <span>↘</span></a>
+      <a class="button button-dark" href="#workflow">EXPLORE 7-STEP WORKFLOW <span>↘</span></a>
+    </div>
+
+    <!-- Live Integration Status Panel (P1.5) -->
+    <div class="status-panel">
+      <div class="status-panel-title">SYSTEM STATUS & INTEGRATION TRACE</div>
+      <div class="status-grid">
+        <div class="status-item"><span class="status-label">Local Demo Policy:</span> <b class="status-val allow">available</b></div>
+        <div class="status-item"><span class="status-label">MCP Streamable HTTP:</span> <b class="status-val" id="statusMcp">checking…</b></div>
+        <div class="status-item"><span class="status-label">AWS Verified Permissions:</span> <b class="status-val muted" id="statusAvp">not configured</b></div>
+        <div class="status-item"><span class="status-label">Bedrock / Strands:</span> <b class="status-val muted" id="statusBedrock">not configured</b></div>
+      </div>
+    </div>
   </div>
-  <div class="hero-art"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orb-core"><span>ALLOW?</span><b>⚡</b><small>POLICY<br>DECISION</small></div><div class="float-card fc1"><span class="tiny-label">REQUEST #018</span><strong>UNTRUSTED<br>ACTOR</strong><span class="pill deny">DENY / 403</span></div><div class="float-card fc2"><span class="tiny-label">EVIDENCE LOG</span><strong>TRACE<br>RECORDED</strong><span class="pill allow">APPEND ONLY*</span></div><div class="sticker">NO<br>BLIND<br>TRUST.</div><div class="art-caption">INTENT → POLICY → PROOF</div></div>
+
+  <div class="hero-art">
+    <div class="orbit orbit-a"></div>
+    <div class="orbit orbit-b"></div>
+    <div class="orb-core">
+      <span>GATEWAY</span>
+      <b>🛡️</b>
+      <small>CANONICAL<br>PLAN BINDING</small>
+    </div>
+    <div class="float-card fc1">
+      <span class="tiny-label">INTENT BINDING</span>
+      <strong>EXACT PLAN<br>HASH-CHECK</strong>
+      <span class="pill allow">SHA-256 CANONICAL</span>
+    </div>
+    <div class="float-card fc2">
+      <span class="tiny-label">SAFETY GATE</span>
+      <strong>FAIL-CLOSED<br>POLICY</strong>
+      <span class="pill deny">NO BLIND ACCESS</span>
+    </div>
+    <div class="sticker">INTENT IS NOT<br>AUTHORITY.</div>
+    <div class="art-caption">PROPOSAL → INTEGRITY → HUMAN GATE → SCOPE</div>
+  </div>
 </section>
-<div class="ticker"><div>NO ACTION WITHOUT CONTEXT ✳ NO ACCESS WITHOUT AUTHORIZATION ✳ NO CLAIM WITHOUT EVIDENCE ✳ </div></div>
+
+<div class="ticker">
+  <div>NO ACTION WITHOUT CONTEXT ✳ NO ACCESS WITHOUT AUTHORIZATION ✳ NO CLAIM WITHOUT EVIDENCE ✳ NO DISPATCH WITHOUT APPROVAL ✳ </div>
+</div>
+
+<!-- PRESETS SECTION (P1.3) -->
+<section class="section preset-section" id="presets">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">01 / BOUNDED SCENARIOS</div>
+      <h2>DEMO <span>PRESETS.</span></h2>
+    </div>
+    <p>Select a 1-click preset. Presets run through the exact same server-side authorization and cryptographic digest checks as manual interaction.</p>
+  </div>
+
+  <div class="preset-cards">
+    <div class="preset-card card-safe" id="presetSafe">
+      <div class="preset-badge allow">SCENARIO A</div>
+      <h3>SAFE APPROVED PATH</h3>
+      <p>Valid case, proposal generated, homeowner provides simulated identity, and approves the exact canonical plan hash.</p>
+      <div class="preset-foot"><span>EXPECTED RESULT:</span> <b>ALLOW · 15-MIN PREVIEW</b></div>
+      <button class="button button-hot full">RUN SAFE SCENARIO ↗</button>
+    </div>
+
+    <div class="preset-card card-missing" id="presetMissing">
+      <div class="preset-badge deny">SCENARIO B</div>
+      <h3>MISSING APPROVAL GATE</h3>
+      <p>Repair plan is prepared, but simulated resident identity is missing. Policy fails closed and denies access preview.</p>
+      <div class="preset-foot"><span>EXPECTED RESULT:</span> <b>DENIED · FAIL-CLOSED</b></div>
+      <button class="button button-dark full">RUN GATE SCENARIO ↗</button>
+    </div>
+
+    <div class="preset-card card-tamper" id="presetTamper">
+      <div class="preset-badge warn">SCENARIO C</div>
+      <h3>TAMPERED PLAN HASH</h3>
+      <p>Approval is submitted with a modified hash or altered scope. The server detects the integrity violation and refuses execution.</p>
+      <div class="preset-foot"><span>EXPECTED RESULT:</span> <b>DENIED · HASH MISMATCH</b></div>
+      <button class="button button-dark full">RUN TAMPER SCENARIO ↗</button>
+    </div>
+
+    <div class="preset-card card-replay" id="presetReplay">
+      <div class="preset-badge warn">SCENARIO D</div>
+      <h3>REPLAY PREVENTION</h3>
+      <p>An approved plan is submitted a second time. The server rejects double finalization as ALREADY_FINALIZED.</p>
+      <div class="preset-foot"><span>EXPECTED RESULT:</span> <b>REPLAY REJECTED</b></div>
+      <button class="button button-dark full">RUN REPLAY SCENARIO ↗</button>
+    </div>
+  </div>
+
+  <div class="preset-banner" id="presetBanner" style="display:none;">
+    <div class="preset-banner-head">
+      <span id="presetBannerTitle">PRESET EXECUTION</span>
+      <button class="btn-tiny" id="presetReset">CLEAR / NEW SCENARIO ↺</button>
+    </div>
+    <p id="presetBannerNarrative"></p>
+  </div>
+</section>
+
+<!-- MULTI-STEP WORKFLOW ORCHESTRATION (P1.1, P1.2, P1.4) -->
+<section class="section workflow-section" id="workflow">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">02 / END-TO-END STATE MACHINE</div>
+      <h2>ACTION <span>ORCHESTRATION.</span></h2>
+    </div>
+    <p>Watch DWARPAL transition through 7 explicit lifecycle stages. Approval is strictly bound to the canonical JSON digest of the requested action and scope.</p>
+  </div>
+
+  <div class="orchestration-grid">
+    <!-- Left: 7-Step Vertical Stepper (P1.1) -->
+    <div class="stepper-col">
+      <div class="panel-top">
+        <span>WORKFLOW TIMELINE</span>
+        <span class="live-dot" id="wfStateBadge">READY</span>
+      </div>
+
+      <div class="stepper-list" id="stepperList">
+        <div class="stepper-item" data-step="1">
+          <div class="stepper-icon">01</div>
+          <div class="stepper-body">
+            <b>CASE CONTEXT LOADED</b>
+            <p>Read case details & check reader role.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="2">
+          <div class="stepper-icon">02</div>
+          <div class="stepper-body">
+            <b>MAINTENANCE PROPOSAL CREATED</b>
+            <p>Log intent without external dispatch.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="3">
+          <div class="stepper-icon">03</div>
+          <div class="stepper-body">
+            <b>PLAN PREVIEW READY</b>
+            <p>Compute deterministic SHA-256 digest.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="4">
+          <div class="stepper-icon">04</div>
+          <div class="stepper-body">
+            <b>AWAITING HOMEOWNER APPROVAL</b>
+            <p>Explicit human-in-the-loop gate.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="5">
+          <div class="stepper-icon">05</div>
+          <div class="stepper-body">
+            <b>POLICY EVALUATED</b>
+            <p>Fail-closed authorization evaluation.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="6">
+          <div class="stepper-icon">06</div>
+          <div class="stepper-body">
+            <b>ACCESS SCOPE PREVIEWED</b>
+            <p>Narrow 1-entry 15-min grant (simulated).</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+        <div class="stepper-item" data-step="7">
+          <div class="stepper-icon">07</div>
+          <div class="stepper-body">
+            <b>AUDIT RECEIPT READY</b>
+            <p>Receipt appended to SQLite store.</p>
+            <span class="step-chip waiting">READY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Interactive Controls & Canonical Plan Preview (P1.2) -->
+    <div class="controls-col">
+      <div class="panel">
+        <div class="panel-top">
+          <span>CONFIGURE HOMEOWNER REQUEST</span>
+          <span class="tiny-label">STEP 1 & 2 TRIGGER</span>
+        </div>
+
+        <label for="caseSelect">SELECT FICTIONAL CASE</label>
+        <select id="caseSelect">
+          <option value="CASE-1042">CASE-1042: Leaking kitchen sink (Kitchen)</option>
+          <option value="CASE-1088">CASE-1088: Smoke alarm battery (Hallway)</option>
+          <option value="CASE-1101">CASE-1101: Package handoff (Front porch)</option>
+        </select>
+
+        <label for="workflowRequest">HOMEOWNER INTENT & REPAIR INSTRUCTION</label>
+        <textarea id="workflowRequest" rows="2">Arrange a plumber visit and ask before granting entry.</textarea>
+
+        <button class="button button-hot full" id="runWorkflow">PREPARE EXACT PLAN ↗</button>
+
+        <!-- Risk Assessment Display (P1.2) -->
+        <div class="risk-card" id="riskCard" style="display:none;">
+          <div class="risk-header">
+            <span>EXPLAINABLE RISK ASSESSMENT (P1.2)</span>
+            <span class="risk-level-badge" id="riskLevelBadge">ELEVATED</span>
+          </div>
+          <p id="riskExplanation">Waiting for plan evaluation…</p>
+          <div class="risk-tags" id="riskFactors"></div>
+          <div class="risk-next-step">RECOMMENDED NEXT STEP: <b id="riskNextStep">REQUEST_APPROVAL</b></div>
+        </div>
+
+        <!-- Plan Digest Box (P0.2) -->
+        <div class="digest-card" id="digestCard" style="display:none;">
+          <div class="digest-title">CANONICAL SHA-256 INTEGRITY BINDING</div>
+          <code id="digestHash">Awaiting hash…</code>
+          <div class="digest-note">Approval is bound to this exact digest. Any alteration will fail closed.</div>
+        </div>
+
+        <!-- Human Approval Gate -->
+        <div class="approval-box" id="approvalBox">
+          <div class="panel-top">
+            <span>HUMAN APPROVAL GATE (STEP 4)</span>
+            <span class="tiny-label">UNTRUSTED DEMO INPUTS</span>
+          </div>
+
+          <div class="checkrow">
+            <input type="checkbox" id="verified">
+            <label for="verified">Simulated identity evidence (resident persona demo toggle)</label>
+          </div>
+          <div class="checkrow">
+            <input type="checkbox" id="homeownerApproved" checked>
+            <label for="homeownerApproved">Homeowner consent to execute requested plan</label>
+          </div>
+
+          <div class="button-row">
+            <button class="button button-dark" id="approveWorkflow" disabled>APPROVE THIS EXACT PLAN ↗</button>
+            <button class="button button-outline" id="tamperWorkflowBtn" disabled>TAMPER TEST (ALTER HASH) ⚠️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Provenance & Decision Explanation (P1.4) -->
+    <div class="provenance-col">
+      <div class="panel">
+        <div class="panel-top">
+          <span>DECISION PROVENANCE</span>
+          <span class="tiny-label">WHY DID DWARPAL DECIDE THIS?</span>
+        </div>
+
+        <div id="provenanceContent" class="provenance-empty">
+          <div class="provenance-icon">🔍</div>
+          <b>NO ACTIVE DECISION</b>
+          <p>Prepare and approve a plan to view the full evidence trail and facts used.</p>
+        </div>
+
+        <div class="callout safety-callout">
+          <b>CRITICAL SAFETY BOUNDARY</b>
+          <p>DWARPAL is an action-governance simulator. No real locks are unlocked, no contractor is contacted, and no municipal service is dispatched.</p>
+        </div>
+
+        <div class="raw-response-toggle">
+          <details>
+            <summary>Inspect Raw JSON Response</summary>
+            <pre id="workflowResult">Workflow has not run yet.</pre>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE AND TRACE TRANSPARENCY (P1.5) -->
+<section class="section trace-section" id="trace">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">03 / PRODUCT TRANSPARENCY</div>
+      <h2>HOW IT <span>WORKS.</span></h2>
+    </div>
+    <p>A transparent breakdown of DWARPAL's request boundaries, policy adapters, and stores. Only verified components are marked live.</p>
+  </div>
+
+  <div class="trace-flow">
+    <div class="trace-node">
+      <div class="node-badge">CLIENT LAYER</div>
+      <h4>Browser / MCP Client</h4>
+      <p>Untrusted input. Submits homeowner request or MCP tool call.</p>
+      <div class="node-status live">LIVE TESTED</div>
+    </div>
+    <div class="trace-arrow">➔</div>
+    <div class="trace-node">
+      <div class="node-badge">API GATEWAY</div>
+      <h4>FastAPI / Lifespan</h4>
+      <p>Validates typed schemas, mounts Streamable HTTP `/mcp` when installed.</p>
+      <div class="node-status live">LIVE TESTED</div>
+    </div>
+    <div class="trace-arrow">➔</div>
+    <div class="trace-node highlight">
+      <div class="node-badge">POLICY ENGINE</div>
+      <h4>Policy Adapter</h4>
+      <p>Deterministic local fail-closed policy (default) or optional AWS AVP.</p>
+      <div class="node-status live">DETERMINISTIC LOCAL</div>
+    </div>
+    <div class="trace-arrow">➔</div>
+    <div class="trace-node">
+      <div class="node-badge">INTEGRITY BINDING</div>
+      <h4>SQLite Demo Store</h4>
+      <p>Stores canonical JSON, SHA-256 hash, and atomic 1-time approval state.</p>
+      <div class="node-status live">LOCAL DEMO STORE</div>
+    </div>
+    <div class="trace-arrow">➔</div>
+    <div class="trace-node">
+      <div class="node-badge">AUDIT LAYER</div>
+      <h4>Audit Receipts</h4>
+      <p>Structured, append-oriented log with UTC timestamps and reason codes.</p>
+      <div class="node-status live">APPEND-ORIENTED</div>
+    </div>
+  </div>
+
+  <div class="trace-details-grid">
+    <div class="trace-detail-card">
+      <h4>WHAT IS LIVE & VERIFIED</h4>
+      <ul>
+        <li>Deterministic fail-closed local policy gate</li>
+        <li>SHA-256 canonical plan integrity binding</li>
+        <li>Atomic single-use approval transition</li>
+        <li>Replay and tamper detection</li>
+        <li>7-step lifecycle state machine</li>
+        <li>Append-oriented SQLite audit trail</li>
+      </ul>
+    </div>
+    <div class="trace-detail-card">
+      <h4>WHAT IS SIMULATED</h4>
+      <ul>
+        <li>Homeowner identity evidence (demo checkbox)</li>
+        <li>Physical door entry and smart locks</li>
+        <li>Plumbing contractor dispatch and scheduling</li>
+        <li>Fictional home-service case records</li>
+      </ul>
+    </div>
+    <div class="trace-detail-card">
+      <h4>WHAT IS NOT CONFIGURED</h4>
+      <ul>
+        <li>Live AWS Verified Permissions policy store (needs AWS credentials)</li>
+        <li>Amazon Bedrock / Strands live model invocation</li>
+        <li>Native Alexa+ partner integration (simulated web route used)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STANDALONE ACTION LAB -->
 <section class="section" id="lab">
-  <div class="section-head"><div><div class="eyebrow">01 / INTERACTIVE PROTOTYPE</div><h2>THE ACTION <span>LAB.</span></h2></div><p>Try a deterministic policy decision against fictional sample data. The UI calls the local API; each request writes an audit event. Identity and roles are simulated, not authenticated credentials.</p></div>
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">04 / INTERACTIVE TOOL TESTING</div>
+      <h2>THE ACTION <span>LAB.</span></h2>
+    </div>
+    <p>Test individual policy tools in isolation. Explore role authorization, case status lookup, and maintenance proposal creation.</p>
+  </div>
+
   <div class="lab-grid">
-    <article class="panel main-panel"><div class="panel-top"><span>SCENARIO 01 — ACCESS REQUEST</span><span class="live-dot">LIVE DEMO</span></div>
-      <label for="role">WHO IS ASKING?</label><select id="role"><option value="visitor">Visitor / delivery partner</option><option value="resident">Resident (unverified)</option><option value="support_agent">Support agent</option></select>
-      <label for="door">RESOURCE</label><select id="door"><option>FRONT-01</option><option>GARAGE-02</option><option>MAINTENANCE-03</option></select>
-      <label for="reason">WHY?</label><input id="reason" value="Package delivery needs entry">
-      <div class="checkrow"><input type="checkbox" id="verified"><label for="verified">Simulated identity evidence (demo only)</label></div><div class="checkrow"><input type="checkbox" id="homeownerApproved"><label for="homeownerApproved">Explicit homeowner approval (demo only)</label></div>
+    <article class="panel main-panel">
+      <div class="panel-top"><span>TOOL 01 — ACCESS EVALUATION</span><span class="live-dot">LIVE DEMO</span></div>
+      <label for="role">WHO IS ASKING?</label>
+      <select id="role">
+        <option value="visitor">Visitor / delivery partner (fails closed)</option>
+        <option value="resident">Resident (requires identity + approval)</option>
+        <option value="support_agent">Support agent (maintenance only)</option>
+      </select>
+      
+      <label for="door">RESOURCE</label>
+      <select id="door">
+        <option>FRONT-01</option>
+        <option>GARAGE-02</option>
+        <option>MAINTENANCE-03</option>
+      </select>
+      
+      <label for="reason">WHY?</label>
+      <input id="reason" value="Package delivery needs entry">
+      
       <button class="button button-hot full" id="runAccess">EVALUATE ACCESS <span>↗</span></button>
-      <div id="decision" class="decision empty"><div class="decision-icon">?</div><div><b>WAITING FOR INPUT</b><p>Run the scenario to reveal the policy result.</p></div></div>
+      <div id="decision" class="decision empty">
+        <div class="decision-icon">?</div>
+        <div>
+          <b>WAITING FOR INPUT</b>
+          <p>Run the scenario to reveal the policy result.</p>
+        </div>
+      </div>
     </article>
-    <article class="panel explain-panel"><div class="panel-top"><span>DECISION TRACE</span><span class="tiny-label">EXPLAINABLE BY DESIGN</span></div>
-      <div class="trace-step"><span class="step-num">01</span><div><b>REQUEST RECEIVED</b><p>Role, resource, and intent are captured.</p></div></div>
-      <div class="trace-line"></div><div class="trace-step"><span class="step-num">02</span><div><b>POLICY EVALUATED</b><p>Unknown or unsafe actions fail closed.</p></div></div>
-      <div class="trace-line"></div><div class="trace-step"><span class="step-num">03</span><div><b>RECEIPT WRITTEN</b><p>Decision and reason enter the audit trail.</p></div></div>
-      <div class="callout"><b>SAFETY BOUNDARY</b><p>This is a simulation. It does not unlock doors or contact any external service.</p></div>
-    </article>
-  </div>
-  <article class="panel workflow-panel"><div class="panel-top"><span>SCENARIO 04 — MULTI-STEP ORCHESTRATION</span><span class="tiny-label">HUMAN APPROVAL GATE</span></div><div class="workflow-copy"><h3>ONE REQUEST.<br><span>THREE GUARDED STEPS.</span></h3><p>Simulate a homeowner asking for a maintenance visit. DWARPAL reads the case, records a proposal, then pauses or approves the access step based on the demo inputs above.</p><label for="workflowRequest">HOMEOWNER REQUEST</label><textarea id="workflowRequest" rows="2">Arrange a plumber visit and ask before granting entry.</textarea><div class="workflow-actions"><button class="button button-hot" id="runWorkflow">PREPARE EXACT PLAN ↗</button><button class="button-dark" id="approveWorkflow" disabled>APPROVE THIS PLAN ↗</button></div><pre id="workflowResult">Workflow has not run yet.</pre></div></article>
-  <div class="mini-grid">
-    <article class="mini-card peach"><div class="mini-number">02</div><div class="eyebrow">READ-ONLY TOOL</div><h3>CASE<br>STATUS.</h3><p>Read a fictional home-service case, with role-based policy checks.</p><div class="inline-form"><select id="caseId"><option>CASE-1042</option><option>CASE-1088</option><option>CASE-1101</option></select><button id="runCase">CHECK ↗</button></div><pre id="caseResult">Awaiting request…</pre></article>
-    <article class="mini-card lilac"><div class="mini-number">03</div><div class="eyebrow">HUMAN-IN-THE-LOOP</div><h3>PROPOSE.<br>DON'T EXECUTE.</h3><p>Record a proposed maintenance action. Dispatch is intentionally disabled.</p><input id="proposal" value="Assign an engineer for inspection"><button class="button-dark full" id="runProposal">CREATE PROPOSAL ↗</button><pre id="proposalResult">Nothing submitted yet.</pre></article>
+
+    <div class="mini-grid-vertical">
+      <article class="mini-card peach">
+        <div class="mini-number">02</div>
+        <div class="eyebrow">READ-ONLY TOOL</div>
+        <h3>CASE STATUS.</h3>
+        <p>Read a fictional home-service case, with role-based policy checks.</p>
+        <div class="inline-form">
+          <select id="caseId">
+            <option>CASE-1042</option>
+            <option>CASE-1088</option>
+            <option>CASE-1101</option>
+          </select>
+          <button id="runCase">CHECK ↗</button>
+        </div>
+        <pre id="caseResult">Awaiting request…</pre>
+      </article>
+
+      <article class="mini-card lilac">
+        <div class="mini-number">03</div>
+        <div class="eyebrow">HUMAN-IN-THE-LOOP</div>
+        <h3>PROPOSE ACTION.</h3>
+        <p>Record a proposed maintenance action. External dispatch is intentionally disabled.</p>
+        <input id="proposal" value="Assign an engineer for inspection">
+        <button class="button button-dark full" id="runProposal">CREATE PROPOSAL ↗</button>
+        <pre id="proposalResult">Nothing submitted yet.</pre>
+      </article>
+    </div>
   </div>
 </section>
-<section class="section audit-section" id="audit"><div class="section-head"><div><div class="eyebrow">02 / ACCOUNTABILITY</div><h2>SHOW ME THE <span>RECEIPTS.</span></h2></div><button class="button-dark" id="refreshAudit">REFRESH LOG ↻</button></div>
-  <div class="audit-shell"><div class="audit-head"><span>UTC TIMESTAMP</span><span>PRINCIPAL / ACTION</span><span>DECISION</span><span>POLICY ENGINE</span></div><div id="auditRows"><div class="empty-row">No events yet. Run a scenario above.</div></div></div>
-  <p class="footnote">* SQLite demo audit trail is append-oriented, not tamper-proof. Production would require managed identity, durable logs, access controls, retention policy, and monitoring.</p>
+
+<!-- AUDIT LOGS SECTION (P0.3) -->
+<section class="section audit-section" id="audit">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">05 / ACCOUNTABILITY & AUDIT</div>
+      <h2>SHOW ME THE <span>RECEIPTS.</span></h2>
+    </div>
+    <div class="audit-actions">
+      <button class="button button-dark" id="refreshAudit">REFRESH LOG ↻</button>
+    </div>
+  </div>
+  
+  <div class="audit-shell">
+    <div class="audit-head">
+      <span>UTC TIMESTAMP</span>
+      <span>PRINCIPAL / ACTION</span>
+      <span>DECISION & REASON CODE</span>
+      <span>POLICY ENGINE / DETAILS</span>
+    </div>
+    <div id="auditRows">
+      <div class="empty-row">No events yet. Run a scenario above.</div>
+    </div>
+  </div>
+  <p class="footnote">* Local demo audit trail uses SQLite append-oriented logging. In production, this would be supplemented by managed identity, Amazon CloudWatch/CloudTrail, and tamper-resistant storage.</p>
 </section>
-<section class="manifesto" id="about"><div class="eyebrow">03 / THE POINT</div><h2>THE FUTURE IS<br><span>AGENTIC.</span><br>THE HANDOFF<br>MUST BE <span class="hot">EXPLICIT.</span></h2><div class="manifesto-side"><p>Agents will increasingly read, recommend, and act across services. DWARPAL makes the boundary legible: what was requested, what policy said, what happened, and what still needs a human.</p><div class="manifesto-tag">INTENT IS NOT<br>AUTHORITY.</div></div></section>
-<footer><div class="brand"><span class="brand-mark">D.</span> DWARPAL</div><span>INDEPENDENT HACKATHON PROTOTYPE · NOT AFFILIATED WITH AMAZON OR SPOTIFY</span><span id="health">CHECKING API…</span></footer>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="about">
+  <div class="eyebrow">06 / THE PHILOSOPHY</div>
+  <h2>THE FUTURE IS<br><span>AGENTIC.</span><br>THE HANDOFF<br>MUST BE <span class="hot">EXPLICIT.</span></h2>
+  <div class="manifesto-side">
+    <p>AI assistants will increasingly coordinate actions across real-world physical and digital systems. DWARPAL makes the boundaries legible: what was requested, what policy evaluated, what hash bound the approval, and what receipt remains.</p>
+    <div class="manifesto-tag">INTENT IS NOT<br>AUTHORITY.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="brand"><span class="brand-mark">D.</span> DWARPAL</div>
+  <span>AMAZON DEVELOPER HACKATHON PROTOTYPE · NOT AFFILIATED WITH AMAZON OR SPOTIFY</span>
+  <span id="health">CHECKING API…</span>
+</footer>
 </main>
+
 <script src="/static/app.js"></script>
-</body></html>
+</body>
+</html>

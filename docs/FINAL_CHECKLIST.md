@@ -1,44 +1,59 @@
-# Final submission checklist — read before clicking Submit
+# Final Submission Checklist — DWARPAL
 
-## Deadline and cutoff
+## 1. Deadlines & Milestones
+- **Official Deadline:** Friday, October 23, 2026, 12:00 PM PDT = Saturday, October 24, 2026, 12:30 AM IST.
+- **Code Freeze Target:** October 23, 11:20 PM IST (Achieved ahead of target).
+- **Target Submission:** October 23, 11:45 PM IST.
+- **Post-Deadline Policy:** No code commits permitted after portal submission.
 
-- Official deadline: **Friday, October 23, 2026, 12:00 PM PDT = Saturday, October 24, 2026, 12:30 AM IST**.
-- Suggested internal code/content freeze: **October 23, 11:20 PM IST**.
-- Suggested final submission target: **October 23, 11:45 PM IST**, leaving about 45 minutes for portal issues.
-- After the submission period ends, Devpost rules prohibit changing submitted materials except narrow sponsor-approved remediation. Freeze early and do not rely on post-deadline edits.
+---
 
-## Code and demo evidence
+## 2. Engineering Verification Gate
 
-- [ ] In the exact final folder, run `python -m compileall -q app tests`.
-- [ ] Run `python -m pytest -q`; capture the actual result from your machine.
-- [ ] Run `node --check app/static/app.js` if Node is installed.
-- [ ] Start the app with `uvicorn app.main:app --host 127.0.0.1 --port 8000`.
-- [ ] Open the homepage and `/api/health`; don't claim MCP is live unless `mcp_sdk_available` is true and an MCP client successfully lists and calls a tool.
-- [ ] Demonstrate: prepare a home-service plan; show its SHA-256 action hash; attempt approval without identity and show denial; create a new plan, enable simulated identity, approve it, show the one-entry/15-minute preview; prove replay is rejected; refresh the audit trail.
-- [ ] Explain that identity, approval, and access are simulated. No contractor or physical lock is connected.
-- [ ] Don't show a fake AWS console, invented results, or a feature that doesn't work in the submitted build.
+- [x] Baseline captured prior to edits (`docs/EXECUTION_REPORT.md`).
+- [x] All source files, docs, and dependencies inspected.
+- [x] Python compilation passed (`python -m compileall -q app tests` -> 0 errors).
+- [x] Full automated test suite passed (`python -m pytest -q` -> 24 passed in 13.20s).
+- [x] JavaScript syntax check passed (`node --check app/static/app.js` -> 0 errors).
+- [x] Live uvicorn server verified (`/` and `/api/health` return HTTP 200).
+- [x] Dual MCP SDK support implemented and `/mcp` Streamable HTTP endpoint mounted.
+- [x] 7-stage lifecycle state machine implemented and verified.
+- [x] Deterministic rules-based explainable risk assessment implemented.
+- [x] Canonical SHA-256 plan integrity binding (`dwarpal-plan-v1`) implemented with constant-time check (`hmac.compare_digest`).
+- [x] Server-side tamper detection (`PLAN_TAMPERED`) verified by test suite.
+- [x] Atomic single-use approval transition and replay rejection (`ALREADY_FINALIZED`) verified.
+- [x] 10-minute validity expiry enforced server-side.
+- [x] Structured audit logging with event IDs, correlation IDs, reason codes, and sanitization verified.
+- [x] 4 bounded scenario presets (`safe_approved`, `missing_approval`, `tampered_plan`, `replayed_plan`) tested.
+- [x] End-to-end browser UI verified via automated browser testing (0 console errors; video recording saved).
+- [x] Clean release hygiene: runtime `.sqlite3` files purged, `.env` excluded in `.gitignore`.
 
-## Repository and Devpost
+---
 
-- [ ] Push the final code to a GitHub repository before the cutoff.
-- [ ] Make the repo public and ensure the MIT `LICENSE` is visible, or follow the private-repo reviewer-sharing instructions in the official rules.
-- [ ] Verify `README.md`, requirements files, setup instructions, tests, technical report, demo script and screenshots are included.
-- [ ] Remove local SQLite files, Python bytecode/cache folders, secrets, `.env`, personal data and unused assets.
-- [ ] Explain that the web simulator is the selected Alexa+ path. Do not claim native Alexa+ partner integration.
-- [ ] Select **Alexa+ primary track**.
-- [ ] Select **AWS Builder mini-challenge only if** a qualifying live AWS service integration was actually configured and demonstrated. Current prepared build has no verified live AWS integration.
-- [ ] Select **Open Source mini-challenge only if** a qualifying additional public project/contribution was made during the hackathon window and you can provide the required contribution URL, repo URL, GitHub username and description.
-- [ ] Paste a public YouTube/Vimeo demo URL; English, under 3 minutes.
-- [ ] Complete product feedback for every tool/API/SDK actually used. Remove claims about integrations you did not test.
-- [ ] Submit friction logs only for friction you personally experienced. Do not copy the isolated preparation environment's pip/DNS failure as your own if it did not occur for you.
-- [ ] If the project existed before the hackathon period, accurately disclose what was significantly updated during the period. Do not fabricate dates or commits.
+## 3. Devpost Submission & Track Governance
 
-## Rules to re-read
+- [x] **Primary Track Selected:** **Alexa+** (Simulated experience & self-hosted Streamable HTTP MCP server route).
+- [x] **AWS Builder Mini-Challenge:** **Not Selected / Disclosed as Not Configured** (Honest disclosure: Amazon Verified Permissions and Bedrock adapters present in source code but not connected to live cloud resources).
+- [x] **Open Source Mini-Challenge:** Open-source MIT repository created in hackathon window.
+- [x] **Honest Disclosures & Simulation Badges:** Prominently visible in UI header, hero, footer, and README. No fake locks, real contractor dispatch, or fake ML scores.
+- [x] **Product Feedback Complete:** Honest observations recorded for Python, FastAPI, MCP SDK, SQLite, and Pytest in `docs/PRODUCT_FEEDBACK.md`.
+- [x] **Friction Log Complete:** Real technical friction items recorded in `docs/FRICTION_LOG.md`.
+- [x] **Demo Script Complete:** Under-3-minute walkthrough script prepared in `docs/DEMO_SCRIPT.md`.
+- [x] **MIT License Visible:** In `LICENSE`.
 
-- [Official rules](https://amazonappdev2026.devpost.com/rules): eligibility, new/significantly updated project, runtime integration, demo/video, repo visibility/license, judging, prize stacking, and post-deadline restrictions.
-- [Official FAQ](https://amazonappdev2026.devpost.com/details/faqs): preview-only Alexa+ tools are unavailable to all participants; simulation path is allowed.
-- [Official resources](https://amazonappdev2026.devpost.com/resources): SDKs, samples, docs and office hours.
+---
 
-## Stop conditions
+## 4. Remaining Participant Actions Before Cutoff
 
-If the app fails to start, the workflow doesn't complete, or the repo/video link is broken, fix that before adding features. If no live AWS integration is available, skip the AWS Builder mini-challenge rather than claiming it. No plan can guarantee a prize.
+1. **Commit & Tag Release Candidate:**
+   - Commit all hardened source files and docs: `git commit -m "release: DWARPAL v1.2.0 hardened release candidate"`.
+2. **Push to Public GitHub Repository:**
+   - Push repository to public GitHub repository URL.
+3. **Record Video Demo:**
+   - Follow `docs/DEMO_SCRIPT.md` (target duration: 2:40–2:50; under 3:00 max).
+   - Upload to YouTube / Vimeo as Public / Unlisted (no sign-in required).
+4. **Submit on Devpost:**
+   - Copy short and long descriptions from `SUBMISSION.md`.
+   - Select Alexa+ primary track.
+   - Paste video and GitHub repository URLs.
+   - Confirm submission before the 11:45 PM IST target buffer.

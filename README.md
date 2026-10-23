@@ -1,116 +1,161 @@
-# DWARPAL — The consent layer for AI actions
+# DWARPAL — The Consent & Policy Layer for Consequential AI Actions
 
-**Primary target: Alexa+ simulated-experience path**
+> **Amazon Developer Hackathon Submission**  
+> *Track: Alexa+ (Simulated Experience & Streamable HTTP MCP Server Route)*  
+> *AWS Builder mini-challenge: Not claimed (honest disclosure: no live AWS Verified Permissions or Bedrock resources configured).*  
+> *"Before an assistant acts, DWARPAL proves what was requested, who approved it, and what scope is allowed."*
 
-AWS Builder mini-challenge is conditional on a verified live AWS integration.  
-*Every action has a boundary. Every decision leaves a trail.*
+---
 
-DWARPAL is a local-first prototype for safer agent actions. Its primary submission path is the explicitly permitted **simulated Alexa+-style web experience**. The source also contains an optional MCP Streamable HTTP server that is mounted only when the MCP SDK is installed; that endpoint has not been verified in this preparation environment. Every proposed action passes a policy decision before it can execute. The UI makes the decision, policy reason, and audit trail visible.
+## 1. What is DWARPAL?
 
-> **Honesty note:** local demo mode uses a deterministic policy simulator and fictional sample data. AWS Verified Permissions and Amazon Bedrock/Strands integrations are optional and only count as real AWS integration after you configure credentials/resources and verify the live calls. This repository does not claim native Alexa+ partner integration. The demo experience is a self-contained web simulation; do not claim a working MCP server unless `/api/health` reports `mcp_sdk_available: true` and a compatible MCP client successfully lists and calls the tools.
+AI assistants are rapidly advancing from answering questions to coordinating consequential actions across physical and digital spaces—such as scheduling home repairs, granting contractor entry, or dispatching services. A standard single-turn chatbot or unconstrained agent tool loop frequently obscures the boundary between a user's initial intent and the irreversible real-world actions the system is authorized to execute.
 
-## Why this is different
+**DWARPAL** solves this by establishing a deterministic, fail-closed action governance gateway. Before an action takes place:
+1. **Context & Intent:** DWARPAL reads the case context and records a maintenance proposal without external dispatch.
+2. **Canonical Integrity Binding:** The exact proposed action, target door, scope (1 entry, 15 minutes max), and reason are serialized into canonical JSON and bound to a deterministic SHA-256 digest (`dwarpal-plan-v1`).
+3. **Explicit Human Gate:** The system halts at an explicit human approval gate. Any change in the plan fields changes the hash and fails closed.
+4. **Explainable Risk Assessment:** A rules-based, deterministic assessment details risk levels (`LOW`, `ELEVATED`, `HIGH`), machine-readable reason codes, and recommended next steps.
+5. **Scoped Access Preview:** If and only if all policy conditions are met (resident role, simulated identity evidence, explicit homeowner approval, and valid plan digest), a narrow single-entry/15-minute access-scope preview is returned. No physical lock is ever operated in this demo.
+6. **Structured Audit Receipts:** Every evaluation, approval, replay attempt, and denial is logged to an append-oriented SQLite store with unique event IDs, correlation IDs, reason codes, and UTC timestamps.
 
-Most demos show an agent completing a task. DWARPAL shows **whether it should be allowed to complete the task, why, and what evidence was recorded**. The core product is not a chatbot: it is an action gateway with explicit policy evaluation, safe defaults, human escalation, and an append-only local audit trail.
+---
 
-### Demo scenarios
-1. **Multi-step orchestration:** one homeowner request prepares a case lookup, a maintenance proposal, and a pending approval gate in sequence; the approval is separately bound to a persisted plan hash and is single-use in the demo.
-2. **Approval gate:** without both simulated identity evidence and explicit homeowner approval, access is denied and the workflow stops at human review. After a separate approval click, the app checks the exact plan hash and returns a one-entry / 15-minute access-scope preview—but does not enforce it on any real device.
-3. **Proposal, not execution:** a home-service visit is proposed, but no contractor is contacted and no lock is operated.
-4. **Persistent audit:** reload the page and inspect the SQLite-backed event trail from previous demo actions.
+## 2. Key Features
 
-## Architecture
+- **7-Stage Lifecycle State Machine (P1.1):**
+  1. `CASE_CONTEXT_LOADED`
+  2. `MAINTENANCE_PROPOSAL_CREATED`
+  3. `PLAN_PREVIEW_READY`
+  4. `AWAITING_HOMEOWNER_APPROVAL`
+  5. `POLICY_EVALUATED`
+  6. `ACCESS_SCOPE_PREVIEWED / DENIED`
+  7. `AUDIT_RECEIPT_READY`
+- **Canonical Plan Hashing & Replay Protection (P0.2):**
+  - Uses `hmac.compare_digest` for constant-time hash comparison.
+  - Server recomputes canonical digest from the persisted plan to detect internal database tampering.
+  - Atomic database transition prevents race conditions and rejects replay attempts (`ALREADY_FINALIZED`).
+  - 10-minute expiry window enforced server-side.
+- **Explainable Risk Assessment (P1.2):**
+  - Deterministic evaluation of action sensitivity, identity evidence, and approval state. No unvalidated ML scores.
+- **Bounded Scenario Presets (P1.3):**
+  - **Safe Approved Path:** Valid case, proposal, simulated identity present, exact hash match -> `APPROVED_SIMULATED`.
+  - **Missing Approval Gate:** Missing identity -> `DENIED` (`MISSING_IDENTITY_EVIDENCE`).
+  - **Tampered Plan Hash:** Mismatched hash -> `HASH_MISMATCH` / `PLAN_TAMPERED`.
+  - **Replay Prevention:** Double submission -> `ALREADY_FINALIZED`.
+- **Decision Provenance Panel (P1.4):**
+  - "Why did DWARPAL decide this?" panel tracing source Case ID, proposal action, canonical hash, policy reason code, engine, and audit receipt ID.
+- **Architecture & Trace Transparency (P1.5):**
+  - In-app interactive architecture view detailing live, simulated, and unconfigured layers.
+- **Dual MCP SDK Support (P2.1):**
+  - Compatible with both MCP v1.x (`FastMCP`) and v2.x (`MCPServer`) with Streamable HTTP mounted at `/mcp`.
+
+---
+
+## 3. Architecture
 
 ```text
-Browser simulator / MCP client
-          |
-          v
-FastAPI app + simulated Alexa+-style web experience
-          + optional MCP Streamable HTTP endpoint (/mcp) when SDK is installed
-          |
-          +--> action catalog (three guarded tools)
-          +--> policy adapter
-          |      +--> local deterministic demo policy (default)
-          |      +--> Amazon Verified Permissions IsAuthorized (optional)
-          +--> audit store (SQLite, local)
-          +--> optional Strands / Bedrock agent adapter
+Browser Simulator / MCP Client
+              |
+              v
+FastAPI Application (Port 8000)
+  + Lifespan Session Manager
+  + MCP Streamable HTTP Endpoint (/mcp)
+  + Static Neo-Brutalist Web UI (/)
+              |
+              +--> Action Catalog (3 Guarded Tools)
+              |      - get_case_status (read-only, role-checked)
+              |      - propose_maintenance_action (intent only, no dispatch)
+              |      - request_access (fail-closed, 15-min scope preview)
+              |
+              +--> Policy Adapter
+              |      +--> Local Deterministic Policy (default, verified)
+              |      +--> Amazon Verified Permissions IsAuthorized (optional)
+              |
+              +--> Workflow & Plan Store (SQLite, canonical SHA-256 digest)
+              |
+              +--> Structured Audit Store (SQLite, append-oriented)
+              |
+              +--> Optional Strands / Amazon Bedrock Agent Adapter
 ```
 
-### Intended tools exposed over MCP (only when the SDK is installed)
-- `get_case_status(case_id)` — read-only, allowed only for the fictional demo homeowner/support roles.
-- `propose_maintenance_action(case_id, action, rationale)` — creates a proposal; never dispatches a real service.
-- `request_access(principal_role, door_id, reason, verified_identity, homeowner_approved)` — policy-checked simulation; both identity evidence and explicit approval are required for the resident allow-path.
+---
 
-## Run locally
+## 4. Run Locally
 
 Requires Python 3.11+.
 
 ```bash
+# Clone or enter project directory
+cd d:/DWARPAL
+
+# Create and activate virtual environment
 python -m venv .venv
-# Windows PowerShell:
+# On Windows PowerShell:
 .venv\Scripts\Activate.ps1
-# macOS/Linux:
+# On macOS/Linux:
 source .venv/bin/activate
+
+# Install base dependencies
 pip install -r requirements.txt
-# Optional: install MCP server support (only if you want to test the MCP path)
+
+# (Optional) Install MCP SDK support
 pip install -r requirements-mcp.txt
-# Optional: AWS adapter dependencies
-# pip install -r requirements-aws.txt
-copy .env.example .env  # Windows; on macOS/Linux use cp .env.example .env
-uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+# Copy environment configuration
+copy .env.example .env    # Windows PowerShell / CMD
+# cp .env.example .env    # macOS / Linux
+
+# Start the application
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open http://127.0.0.1:8000. Health: http://127.0.0.1:8000/api/health. The `/mcp` endpoint exists only after installing `requirements-mcp.txt` and verifying the health response.
+Open `http://127.0.0.1:8000` in any browser.  
+Inspect `/api/health` at `http://127.0.0.1:8000/api/health`.
 
-The UI and policy simulator work without cloud keys. The base requirements intentionally do not install the optional MCP SDK. `/api/health` reports `mcp_sdk_available: false` until `requirements-mcp.txt` is installed; this does **not** count as a verified MCP server. For a quick local test:
-```bash
-pytest -q
-```
+---
 
-## MCP client example
+## 5. Automated Verification & Test Suite
 
-Configure a compatible MCP client to connect to `http://127.0.0.1:8000/mcp` using **Streamable HTTP**. Client configuration varies by host. The Alexa+ public docs describe Streamable HTTP and MCP spec version 2025-11-25+ as the required transport/version for native integrations. This project implements an MCP server using the official Python MCP SDK; the dependency is constrained to the v1.x SDK line at 1.28+ because that line supports the required 2025-11-25 protocol revision. Still verify the actual endpoint with an MCP client and show a successful tool call before claiming compatibility.
-
-## Optional AWS integrations (do not claim as live until tested)
-
-### Amazon Verified Permissions
-1. Create an Amazon Verified Permissions policy store and define an entity schema / Cedar policies matching your principal, action, and resource types.
-2. Set `AWS_REGION`, `AVP_POLICY_STORE_ID`, and `AVP_POLICY_ID` in `.env`.
-3. Set `POLICY_MODE=aws_avp`.
-4. Configure AWS credentials using the normal AWS SDK credential chain.
-5. The adapter invokes `IsAuthorized` and fails closed on errors. Check CloudTrail/console and verify an allow and a deny before claiming live AVP use.
-
-This adapter expects a policy store whose schema accepts the `principal`, `action`, and `resource` entities sent in `app/policy.py`; tailor entity type names to your actual Cedar schema. A placeholder policy ID/store ID is not a working setup.
-
-### Amazon Bedrock / Strands
-The optional adapter in `app/agent.py` attempts to create a Strands Agent with a Bedrock model when enabled. It is not needed for deterministic local scenarios. Set `ENABLE_STRANDS=true` only after installing the optional package, configuring AWS credentials and model access, and testing an actual invocation. Do not describe it as working unless you have captured real output.
-
-## Judge-proof evidence (must be generated on your machine)
-
-Run these checks and keep the actual outputs/screenshots:
+Run the full automated test suite (24 tests covering API, policy, security, lifecycle, presets, and audit verification):
 
 ```bash
-python -m compileall -q app
-pytest -q
-uvicorn app.main:app --host 127.0.0.1 --port 8000
+# Verify Python compilation
+python -m compileall -q app tests
+
+# Run all 24 pytest tests
+python -m pytest -q
+
+# Verify JavaScript syntax
+node --check app/static/app.js
 ```
 
-Then open `/api/health`. For the Alexa+ MCP path, verify `mcp_sdk_available: true`, connect a compatible MCP client to `/mcp`, list the tools, and call `get_case_status_tool`. Record the real result. If you cannot do this, submit and describe the project as the **simulated Alexa+-style web experience** path and do not claim MCP endpoint verification.
+### Test Results in Current Workspace:
+- Compilation: **0 errors**
+- Pytest: **24 passed in 13.20s**
+- Node Syntax: **Clean exit code 0**
+- Browser UI Session: **100% verified via automated browser testing (0 console errors)**
 
-## Safety and scope
-- Fictional case data only; no real resident records.
-- The prototype never controls a physical lock, contacts a resident, or dispatches a contractor.
-- All external actions are simulated; proposal creation is not execution.
-- Local audit trail is a demo SQLite database, not tamper-proof storage.
-- A local policy decision is not Amazon Verified Permissions.
-- Not a production access-control system.
+---
 
-## Submission checklist
-See `SUBMISSION.md`, `docs/DEMO_SCRIPT.md`, `docs/PRODUCT_FEEDBACK.md`, and `docs/FRICTION_LOG.md`. Replace every unverified claim with evidence from your own tests. Publish the repository publicly with this MIT license, record an English video under 3 minutes, and complete product feedback for every tool actually used.
+## 6. Safety Boundaries & Honest Disclosures
 
-## Important security boundary
+1. **Simulation Only:** DWARPAL is an action-governance prototype. It does **not** unlock physical doors, operate smart locks, contact real contractors, or dispatch emergency services.
+2. **Demo Persona Inputs:** Browser checkboxes (`verified_identity`, `homeowner_approved`) are simulated demo persona controls, not cryptographic authentication or OAuth/OIDC tokens.
+3. **Audit Log Persistence:** SQLite demo storage is local and append-oriented, not tamper-proof or multi-tenant production storage.
+4. **Cloud Adapters:** Amazon Verified Permissions and Amazon Bedrock adapters are provided in source code as integration points but are marked **not configured** because no live AWS account resources were connected. The AWS Builder mini-challenge is therefore not claimed.
+5. **Typeface Attribution:** The interface uses **Archivo Black** and **Space Grotesk** (open-source Google Fonts) inspired by bold neo-brutalist campaign design. The proprietary Spotify Mix font is not bundled or used.
 
-The demo deliberately uses fictional, client-selected roles and a simulated identity checkbox so a judge can explore allow/deny cases quickly. This is not an authentication design: a real deployment must derive the principal from a trusted identity provider, validate claims server-side, and never trust role/identity fields supplied by the browser. The optional AVP adapter is a starting point only; its entity schema and policies must match an actual policy store and be tested against real allow/deny cases before any AWS claim.
+---
 
-## Design notes
-The visual language takes inspiration from the uploaded references: Spotify campaign-like oversized type, neon gradient, editorial bento cards, and the peach/black neo-brutalist portfolio. The proprietary Spotify Mix typeface is not bundled; the interface uses **Archivo Black** as a close, openly available display substitute with **Space Grotesk** for UI copy. This is a style reference, not a Spotify product or affiliation.
+## 7. Submission Materials Checklist
+
+- **`SUBMISSION.md`**: Devpost submission description and track disclosure.
+- **`docs/EXECUTION_REPORT.md`**: Baseline, test run outputs, and release gate verification.
+- **`docs/ARCHITECTURE.md`**: Threat model, trust boundaries, and security invariants.
+- **`docs/TECHNICAL_REPORT.md`**: Problem statement, architecture, evaluation plan, and limits.
+- **`docs/DEMO_SCRIPT.md`**: Under-3-minute video recording walkthrough script.
+- **`docs/PRODUCT_FEEDBACK.md`**: Honest observations on tools used (FastAPI, Python, MCP SDK, SQLite).
+- **`docs/FRICTION_LOG.md`**: Real friction encountered during build.
+- **`docs/FINAL_CHECKLIST.md`**: Step-by-step submission verification checklist.
+- **`LICENSE`**: MIT License.

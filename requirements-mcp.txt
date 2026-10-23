@@ -1,0 +1,3 @@
+-r requirements.txt
+# MCP Python SDK v1.x; 1.28+ supports the hackathon's required 2025-11-25 revision.
+mcp[cli]>=1.28,<2

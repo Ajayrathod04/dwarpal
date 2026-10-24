@@ -22,7 +22,8 @@ def _sanitize_details(data: Any) -> Any:
     return data
 
 def _db():
-    path = os.getenv("DATABASE_PATH", "./dwarpal_audit.sqlite3")
+    default_path = "/tmp/dwarpal_audit.sqlite3" if os.getenv("VERCEL") else "./dwarpal_audit.sqlite3"
+    path = os.getenv("DATABASE_PATH", default_path)
     con = sqlite3.connect(path)
     con.row_factory = sqlite3.Row
     con.execute("""CREATE TABLE IF NOT EXISTS audit (

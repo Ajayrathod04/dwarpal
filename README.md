@@ -113,6 +113,11 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 Open `http://127.0.0.1:8000` in any browser.  
 Inspect `/api/health` at `http://127.0.0.1:8000/api/health`.
 
+### Live Deployment
+- **Public Demo URL:** [https://dwarpal-neon.vercel.app](https://dwarpal-neon.vercel.app)
+- **Live Health Endpoint:** [https://dwarpal-neon.vercel.app/api/health](https://dwarpal-neon.vercel.app/api/health)
+*(Deployed on Vercel; uses ephemeral serverless SQLite storage in `/tmp`).*
+
 ---
 
 ## 5. Automated Verification & Test Suite

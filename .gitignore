@@ -9,8 +9,11 @@ dist/
 build/
 *.zip
 scratch/
+.vercel
 
 # Generated Python artifacts
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+.vercel

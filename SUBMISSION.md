@@ -50,7 +50,8 @@ DWARPAL introduces a deterministic, fail-closed policy gateway that governs assi
   - Amazon Bedrock / Strands live model calls (adapter present in code).
   - Native Alexa+ partner accounts (simulated web route used).
 - **Deployment Status:**
-  - Local verified uvicorn server on port 8000; not deployed to public cloud.
+  - **Live Public URL:** https://dwarpal-neon.vercel.app (Verified live on Vercel; ephemeral `/tmp` SQLite demo storage).
+  - **Local Development Server:** Verified on port 8000.
 
 ## 7. Submission Artifacts
 - **Repository:** https://github.com/Ajayrathod04/dwarpal (Public, MIT Licensed)

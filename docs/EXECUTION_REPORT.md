@@ -31,7 +31,7 @@
 | AWS Verified Permissions | Live `IsAuthorized` call | Authorized Cedar policy check | No live AWS credentials or policy store configured | **NOT CONFIGURED** |
 | Amazon Bedrock / Strands | Live model call | Strands invocation | Adapter disabled (`ENABLE_STRANDS=false`) | **NOT CONFIGURED** |
 | Browser UI & State Machine | Browser subagent interaction at `http://127.0.0.1:8000` | Full interactive verification of Presets, 7-step Stepper, Risk Card, Provenance, & Receipts | Fully verified; 0 console errors; video recording saved | **PASS** |
-| Public Web Deployment | Cloud host deployment | Live public HTTPS URL | No hosting provider configured or authorized; ephemeral local SQLite persistence; local uvicorn verified on port 8000 | **NOT DEPLOYED (Local Demo)** |
+| Public Web Deployment | Vercel Serverless Deployment | Live public HTTPS URL | Deployed and verified live at `https://dwarpal-neon.vercel.app`; HTTP 200 on `/`, `/api/health`, static assets, presets, and `/tmp` SQLite audit receipts | **PASS (Deployed on Vercel)** |
 
 ---
 
@@ -102,7 +102,7 @@
 4. **MCP Tool Client Route:**
    - MCPServer is mounted and active at `/mcp` via Streamable HTTP. Real external MCP client connection has been executed and verified over Streamable HTTP (negotiated protocol 2025-11-25, listed tools `get_case_status_tool`, `propose_maintenance_action_tool`, `request_access_tool`, and successfully called `get_case_status_tool` with an `ALLOW` decision).
 5. **Deployment Status:**
-   - Application is verified running locally on port 8000. No public cloud host is configured or authorized. Uses local SQLite persistence suited for local demo execution. Label: NOT DEPLOYED to public cloud.
+   - Deployed and live in production on Vercel at `https://dwarpal-neon.vercel.app`. Uses `/tmp/dwarpal_audit.sqlite3` for serverless demo persistence. All core routes, health check, UI static assets, presets, and audit logs verified.
 
 ---
 
